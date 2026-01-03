@@ -16,8 +16,8 @@ load_dotenv()
 app = FastAPI()
 
 # Static and template setup
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+# app.mount("/static", StaticFiles(directory="static"), name="static")
+# templates = Jinja2Templates(directory="templates")
 
 embeddings = download_embeddings()
 
