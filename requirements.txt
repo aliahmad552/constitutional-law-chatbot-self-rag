@@ -11,4 +11,5 @@ langchain-pinecone
 langchain-huggingface
 python-multipart
 Jinja2
+uvicorn[standard]
 -e .
