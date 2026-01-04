@@ -202,3 +202,11 @@ Please raise issues, submit PRs, or suggest improvements.
 
 ## 📄 License
 This project is licensed under the Apache-2.0 License.
+
+## 👨‍💻 Author
+
+**Ali Ahmad**
+
+- GitHub: https://github.com/aliahmad552
+- LinkedIn: https://www.linkedin.com/in/ali-ahmad-dawana
+- Email: aliahmaddawana@gmail.com
