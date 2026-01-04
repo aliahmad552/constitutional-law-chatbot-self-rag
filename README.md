@@ -104,7 +104,7 @@ revnix-chatbot/
 ├── requirements.txt          # Python dependencies
 ├── .env                      # Environment variables
 └── README.md                 # This file
-
+```
 
 
 ## 🧠 How It Works
