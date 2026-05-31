@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-from src.helper import load_pdf_files, download_embeddings, text_split, filter_to_minimal_docs
+from src.helper1 import load_pdf_files, download_embeddings, text_split, filter_to_minimal_docs
 from pinecone import Pinecone
 from pinecone import ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
@@ -18,7 +18,6 @@ os.environ['PINECONE_API_KEY']=PINECONE_API_KEY
 
 pinecone_api_key = PINECONE_API_KEY
 pc = Pinecone(api_key=pinecone_api_key)
-print(pinecone_api_key)
 index_name='my-index-v1'
 if not pc.has_index(index_name):
     pc.create_index(
