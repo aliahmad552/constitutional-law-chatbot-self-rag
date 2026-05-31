@@ -41,6 +41,7 @@ Key Improvements:
 This makes the chatbot significantly more reliable for sensitive legal queries.
 
 ---
+![RAG Pipeline](images/rag_pipeline.png)
 
 ### 🔹 AI-Driven Knowledge Retrieval
 
