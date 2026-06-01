@@ -108,6 +108,8 @@ Admin dashboard includes system monitoring and logs access.
 
 ---
 
+![ChatBot](images/chat.png)
+
 ## 🛠️ Tech Stack
 
 | Layer | Technology |
