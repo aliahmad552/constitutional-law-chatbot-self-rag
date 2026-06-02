@@ -120,7 +120,7 @@ Admin dashboard includes system monitoring and logs access.
 | Retrieval Pipeline | Self-RAG Architecture |
 | Vector Database | Pinecone |
 | Embeddings | HuggingFace Sentence Transformers |
-| LLM Integration | OpenAI (ChatOpenAI model) |
+| LLM Integration | OpenAI (Qwen 72B model) |
 | Persistence DB | PostgreSQL (chat + memory) |
 | Auth DB | MySQL (user accounts) |
 | Monitoring | LangSmith |

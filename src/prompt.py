@@ -5,27 +5,34 @@ decide_retrieval_prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "You decide whether retrieval is needed.\n"
+            "You are a legal AI assistant for Pakistani law.\n\n"
+            "Determine whether answering the user's question requires "
+            "retrieval from legal documents, statutes, constitutional provisions, "
+            "case law, regulations, or other legal knowledge sources.\n\n"
             "Return JSON with key: should_retrieve (boolean).\n\n"
             "Guidelines:\n"
-            "- should_retrieve=True if answering requires specific facts from company documents.\n"
-            "- should_retrieve=False for general explanations/definitions.\n"
+            "- should_retrieve=True when the question asks about specific legal rights, laws, legal procedures, constitutional articles, court matters, legal documents, regulations, penalties, or legal obligations.\n"
+            "- should_retrieve=True when legal accuracy is important.\n"
+            "- should_retrieve=False for greetings, casual conversation, or general non-legal questions.\n"
             "- If unsure, choose True."
         ),
-        ("human", "Question: {question}"),
+        ("human", "Question: {question}")
     ]
 )
-
 # direct generation prompt (no retrieval)
 direct_generation_prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "Answer using only your general knowledge.\n"
-            "If it requires specific company info, say:\n"
-            "'I don't know based on my general knowledge.'"
+            "You are Pakistan Legal AI Assistant.\n\n"
+            "Answer only using general legal knowledge and common legal concepts.\n"
+            "Do not invent legal facts, constitutional articles, legal procedures, "
+            "or legal requirements.\n\n"
+            "If the question requires specific legal information or legal references, say:\n"
+            "'I need to consult legal documents before answering accurately.'\n\n"
+            "Keep answers professional, clear, and easy to understand."
         ),
-        ("human", "{question}"),
+        ("human", "{question}")
     ]
 )
 
@@ -56,126 +63,12 @@ rag_generation_prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "You are a business rag chatbot.\n\n"
-            "You will receive a CONTEXT block from internal company documents.\n"
+            "You are a legal AI assistant for Pakistani law.\n\n"
+            "You will receive a CONTEXT block from legal documents, statutes, or case law.\n"
             "Task:\n"
             "Answer the question based on the context"
             "Dont mention that you are getting a context in your answer"
         ),
         ("human", "Question:\n{question}\n\nContext:\n{context}"),
-    ]
-)
-
-# answer is supported or not prompt
-issup_prompt = ChatPromptTemplate.from_messages(
-    [
-        (
-            "system",
-            "You are verifying whether the ANSWER is supported by the CONTEXT.\n"
-            "Return JSON with keys: issup, evidence.\n"
-            "issup must be one of: fully_supported, partially_supported, no_support.\n\n"
-            "How to decide issup:\n"
-            "- fully_supported:\n"
-            "  Every meaningful claim is explicitly supported by CONTEXT, and the ANSWER does NOT introduce\n"
-            "  any qualitative/interpretive words that are not present in CONTEXT.\n"
-            "  (Examples of disallowed words unless present in CONTEXT: culture, generous, robust, designed to,\n"
-            "  supports professional development, best-in-class, employee-first, etc.)\n\n"
-            "- partially_supported:\n"
-            "  The core facts are supported, BUT the ANSWER includes ANY abstraction, interpretation, or qualitative\n"
-            "  phrasing not explicitly stated in CONTEXT (e.g., calling policies 'culture', saying leave is 'generous',\n"
-            "  or inferring outcomes like 'supports professional development').\n\n"
-            "- no_support:\n"
-            "  The key claims are not supported by CONTEXT.\n\n"
-            "Rules:\n"
-            "- Be strict: if you see ANY unsupported qualitative/interpretive phrasing, choose partially_supported.\n"
-            "- If the answer is mostly unrelated to the question or unsupported, choose no_support.\n"
-            "- Evidence: include up to 3 short direct quotes from CONTEXT that support the supported parts.\n"
-            "- Do not use outside knowledge."
-        ),
-        (
-            "human",
-            "Question:\n{question}\n\n"
-            "Answer:\n{answer}\n\n"
-            "Context:\n{context}\n"
-        ),
-    ]
-)
-
-
-# revise answer prompt
-revise_prompt = ChatPromptTemplate.from_messages(
-    [
-        (
-            "system",
-            "You are a STRICT reviser.\n\n"
-            "You must output based on the following format:\n\n"
-            "FORMAT (quote-only answer):\n"
-            "- <direct quote from the CONTEXT>\n"
-            "- <direct quote from the CONTEXT>\n\n"
-            "Rules:\n"
-            "- Use ONLY the CONTEXT.\n"
-            "- Do NOT add any new words besides bullet dashes and the quotes themselves.\n"
-            "- Do NOT explain anything.\n"
-            "- Do NOT say 'context', 'not mentioned', 'does not mention', 'not provided', etc.\n"
-        ),
-        (
-            "human",
-            "Question:\n{question}\n\n"
-            "Current Answer:\n{answer}\n\n"
-            "CONTEXT:\n{context}"
-        ),
-    ]
-)
-
-
-# the answer is useful or not
-isuse_prompt = ChatPromptTemplate.from_messages(
-    [
-        (
-            "system",
-            "You are judging USEFULNESS of the ANSWER for the QUESTION.\n\n"
-            "Goal:\n"
-            "- Decide if the answer actually addresses what the user asked.\n\n"
-            "Return JSON with keys: isuse, reason.\n"
-            "isuse must be one of: useful, not_useful.\n\n"
-            "Rules:\n"
-            "- useful: The answer directly answers the question or provides the requested specific info.\n"
-            "- not_useful: The answer is generic, off-topic, or only gives related background without answering.\n"
-            "- Do NOT use outside knowledge.\n"
-            "- Do NOT re-check grounding (IsSUP already did that). Only check: 'Did we answer the question?'\n"
-            "- Keep reason to 1 short line."
-        ),
-        (
-            "human",
-            "Question:\n{question}\n\nAnswer:\n{answer}"
-        ),
-    ]
-)
-
-# rewrite the retrieval
-rewrite_for_retrieval_prompt = ChatPromptTemplate.from_messages(
-    [
-        (
-            "system",
-            "Rewrite the user's QUESTION into a query optimized for vector retrieval over INTERNAL company PDFs.\n\n"
-            "Rules:\n"
-            "- Keep it short (6–16 words).\n"
-            "- Preserve key entities (e.g., NexaAI, plan names).\n"
-            "- Add 2–5 high-signal keywords that likely appear in policy/pricing docs.\n"
-            "- Remove filler words.\n"
-            "- Do NOT answer the question.\n"
-            "- Output JSON with key: retrieval_query\n\n"
-            "Examples:\n"
-            "Q: 'Do NexaAI plans include a free trial?'\n"
-            "-> {{'retrieval_query': 'NexaAI free trial duration trial period plans'}}\n\n"
-            "Q: 'What is NexaAI refund policy?'\n"
-            "-> {{'retrieval_query': 'NexaAI refund policy cancellation refund timeline charges'}}"
-        ),
-        (
-            "human",
-            "QUESTION:\n{question}\n\n"
-            "Previous retrieval query:\n{retrieval_query}\n\n"
-            "Answer (if any):\n{answer}"
-        ),
     ]
 )

@@ -4,6 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import uuid
 import asyncio
 import sqlite3
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from src.helper import rag_app
 
@@ -20,6 +22,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 
 # =========================================================
 # SQLITE
@@ -172,9 +176,13 @@ def get_messages(thread_id: str):
 # =========================================================
 
 @app.get("/")
-def root():
-    return {"status": "running"}
+async def root():
+    return FileResponse("preview.html")
 
+@app.get("/chat")
+async def chat_page():
+    print("CHAT ROUTE HIT")
+    return FileResponse("chat.html")
 
 @app.get("/health")
 def health():
