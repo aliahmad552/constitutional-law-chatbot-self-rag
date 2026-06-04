@@ -177,12 +177,12 @@ def get_messages(thread_id: str):
 
 @app.get("/")
 async def root():
-    return FileResponse("preview.html")
+    return FileResponse("App/preview.html")
 
 @app.get("/chat")
 async def chat_page():
     print("CHAT ROUTE HIT")
-    return FileResponse("chat.html")
+    return FileResponse("App/chat.html")
 
 @app.get("/health")
 def health():
